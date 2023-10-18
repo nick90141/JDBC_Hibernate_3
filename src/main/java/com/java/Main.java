@@ -8,21 +8,16 @@ import org.hibernate.cfg.Configuration;
 public class Main {
 
     public static void main(String[] args) {
-        Configuration configuration = new Configuration().configure("hibernate.cfg.xml");
+        try (SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
 
-        SessionFactory sessionFactory = configuration.buildSessionFactory();
+            Transaction transaction = session.beginTransaction();
 
-        Session session = sessionFactory.openSession();
+            Animal animal = new Animal(3, "Fluffy", true);
 
-        Transaction transaction = session.beginTransaction();
+            session.save(animal);
 
-        Animal animal = new Animal(3, "Fluffy", true);
-
-        session.save(animal);
-
-        transaction.commit();
-
-        session.close();
-        sessionFactory.close();
+            transaction.commit();
+        }
     }
 }
